@@ -5,6 +5,7 @@ import Promo from "@/components/Promo";
 import Reviews from "@/components/Reviews";
 import MapSection from "@/components/MapSection";
 import Footer from "@/components/Footer";
+import ChatWidget from "@/components/ChatWidget";
 
 const Index = () => {
   return (
@@ -16,6 +17,7 @@ const Index = () => {
       <Reviews />
       <MapSection />
       <Footer />
+      <ChatWidget />
     </main>
   );
 };
