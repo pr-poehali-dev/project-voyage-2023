@@ -47,16 +47,26 @@ export default function Featured() {
           <h2 className="text-4xl font-bold text-center mb-12 text-neutral-900">Каталог товаров</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {catalog.map((item) => (
-              <div key={item.name} className="group cursor-pointer">
+              <div key={item.name} className="group">
                 <div className="overflow-hidden bg-neutral-200 aspect-[3/4] mb-3 relative">
                   <img src={item.img} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   {item.isNew && (
                     <span className="absolute top-3 left-3 bg-rose-500 text-white text-xs px-2 py-1 uppercase tracking-wide">New</span>
                   )}
+                  <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <button className="w-full bg-black text-white text-xs uppercase tracking-widest py-3 hover:bg-rose-500 transition-colors duration-300">
+                      Купить
+                    </button>
+                  </div>
                 </div>
                 <h3 className="text-neutral-900 font-medium text-sm">{item.name}</h3>
                 <p className="text-neutral-500 text-xs mb-1">{item.category}</p>
-                <p className="text-neutral-900 font-bold">{item.price} ₽</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-neutral-900 font-bold">{item.price} ₽</p>
+                  <button className="text-xs text-rose-500 hover:text-rose-700 underline underline-offset-2 transition-colors duration-200 md:hidden">
+                    Купить
+                  </button>
+                </div>
               </div>
             ))}
           </div>
