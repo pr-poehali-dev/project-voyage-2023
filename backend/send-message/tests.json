@@ -1,0 +1,13 @@
+{
+  "tests": [
+    {
+      "name": "Отправка сообщения в Telegram",
+      "method": "POST",
+      "path": "/",
+      "body": { "name": "Тест", "message": "Тестовое сообщение с сайта" },
+      "expectedStatus": 200,
+      "expectedBody": { "ok": true },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
