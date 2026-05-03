@@ -11,9 +11,12 @@ interface Message {
 const getTime = () =>
   new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
 
+const API_URL = "https://functions.poehali.dev/65d8e513-bede-48e7-beff-44572297f79b";
+
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -28,13 +31,22 @@ export default function ChatWidget() {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 
-  const send = () => {
-    if (!input.trim()) return;
+  const send = async () => {
+    if (!input.trim() || sending) return;
+
     const userMsg: Message = { id: Date.now(), text: input, from: "user", time: getTime() };
     setMessages((prev) => [...prev, userMsg]);
+    const text = input;
     setInput("");
+    setSending(true);
 
-    setTimeout(() => {
+    try {
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "Гость", message: text }),
+      });
+
       const reply: Message = {
         id: Date.now() + 1,
         text: "Спасибо за сообщение! Мы ответим вам в ближайшее время. Время работы: Пн–Пт 10:00–21:00.",
@@ -42,7 +54,17 @@ export default function ChatWidget() {
         time: getTime(),
       };
       setMessages((prev) => [...prev, reply]);
-    }, 1000);
+    } catch {
+      const errorMsg: Message = {
+        id: Date.now() + 1,
+        text: "Не удалось отправить сообщение. Попробуйте ещё раз.",
+        from: "support",
+        time: getTime(),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -80,6 +102,13 @@ export default function ChatWidget() {
                 <span className="text-neutral-400 text-xs mt-1">{msg.time}</span>
               </div>
             ))}
+            {sending && (
+              <div className="flex items-start">
+                <div className="bg-white border border-neutral-200 px-3 py-2 text-sm text-neutral-400">
+                  Отправляю...
+                </div>
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
 
@@ -90,11 +119,13 @@ export default function ChatWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder="Напишите сообщение..."
-              className="flex-1 text-sm outline-none px-3 py-2 border border-neutral-200 focus:border-rose-400 transition-colors"
+              disabled={sending}
+              className="flex-1 text-sm outline-none px-3 py-2 border border-neutral-200 focus:border-rose-400 transition-colors disabled:opacity-50"
             />
             <button
               onClick={send}
-              className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 transition-colors"
+              disabled={sending}
+              className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 transition-colors disabled:opacity-50"
             >
               <Icon name="Send" size={16} />
             </button>
